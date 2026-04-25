@@ -1,11 +1,11 @@
 from django.db import models
 from django.conf import settings
 
-User = settings.AUTH_USER_MODEL
+
 
 class FoodItem(models.Model):
     seller = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='foods',
         db_index=True
