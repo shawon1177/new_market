@@ -8,8 +8,11 @@ class Conversation(models.Model):
     users = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
 class Message(models.Model):
-    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE,db_index=True)
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     text = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)    
+
+    def __str__(self):
+        return f"Msg by {self.sender} in Conv {self.conversation_id}" 

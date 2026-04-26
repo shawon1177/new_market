@@ -22,6 +22,6 @@ class Profile(models.Model):
     image = models.ImageField(upload_to="profile_images/", null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     likes = models.ManyToManyField(User, related_name="liked_profiles", blank=True)
-
+    
     def __str__(self):
         return f"{self.user.username}'s Profile"    

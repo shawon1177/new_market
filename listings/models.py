@@ -1,6 +1,11 @@
 from django.db import models
 from django.conf import settings
 
+CATEGORY_CHOICES = [
+    ('veg', 'Vegetarian'),
+    ('nonveg', 'Non-Vegetarian'),
+    ('dessert', 'Dessert'),
+]
 
 
 class FoodItem(models.Model):
@@ -23,6 +28,9 @@ class FoodItem(models.Model):
     image = models.ImageField(upload_to='foods/')
 
     availability_status = models.BooleanField(default=True, db_index=True)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(auto_now=True, db_index=True)
 
     class Meta:
         indexes = [
