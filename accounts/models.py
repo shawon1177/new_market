@@ -1,27 +1,32 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
+from datetime import timedelta
 
-# Create your models here.
+# USER MODEL
 class User(AbstractUser):
-    email = models.EmailField(unique=True, db_index=True)
-    password = models.CharField(max_length=128)
+    email = models.EmailField(unique=True)
+    is_email_verified = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username", "password"]
+    REQUIRED_FIELDS = ["username"]
 
     def __str__(self):
         return self.email
-    
 
+# PROFILE MODEL
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(blank=True, null=True)
 
-    bio = models.TextField()
-    location = models.CharField(max_length=255)
-    phone_number = models.CharField(max_length=20)
-    image = models.ImageField(upload_to="profile_images/", null=True, blank=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    likes = models.ManyToManyField(User, related_name="liked_profiles", blank=True)
-    
-    def __str__(self):
-        return f"{self.user.username}'s Profile"    
+
+# OTP MODEL
+class OTP(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+    purpose = models.CharField(max_length=20, default="verify")
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    def is_valid(self):
+        expiry_time = self.created_at + timedelta(minutes=10)
+        return (not self.is_used) and timezone.now() < expiry_time

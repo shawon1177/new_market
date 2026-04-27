@@ -5,6 +5,7 @@ CATEGORY_CHOICES = [
     ('veg', 'Vegetarian'),
     ('nonveg', 'Non-Vegetarian'),
     ('dessert', 'Dessert'),
+    ('beverage', 'Beverage'),
 ]
 
 
@@ -28,7 +29,7 @@ class FoodItem(models.Model):
     image = models.ImageField(upload_to='foods/')
 
     availability_status = models.BooleanField(default=True, db_index=True)
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, db_index=True)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, db_index=True, default='veg' )
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True, db_index=True)
 

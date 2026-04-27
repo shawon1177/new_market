@@ -1,11 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>profile</h1>
-</body>
-</html>
+{% extends "accounts/base.html" %}
+
+{% block content %}
+<h2>Profile</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <input name="caption" value="{{ profile.caption }}"><br>
+
+    <input type="file" name="image"><br>
+
+    {% if profile.image %}
+        <img src="{{ profile.image.url }}" width="120">
+    {% endif %}
+
+    <button>Update</button>
+</form>
+<a href="/accounts/logout/">
+    <button>Logout</button>
+</a>
+
+{% endblock %}
