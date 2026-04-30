@@ -22,7 +22,7 @@ class Profile(models.Model):
 
 # OTP MODEL
 class OTP(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    email = models.EmailField(null=True, blank=True)
     code = models.CharField(max_length=6)
     purpose = models.CharField(max_length=20, default="verify")
     is_used = models.BooleanField(default=False)

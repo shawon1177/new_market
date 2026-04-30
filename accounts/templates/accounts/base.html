@@ -1,15 +1,27 @@
-<!DOCTYPE html>
 <html>
 <head>
-    <title>Food Marketplace</title>
+    <title>{% block title %}Accounts{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100">
 
-{% if messages %}
-    {% for message in messages %}
-        <p style="color:red">{{ message }}</p>
-    {% endfor %}
-{% endif %}
+    <script>
+        function getCSRFToken() {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith('csrftoken=')) {
+                cookieValue = decodeURIComponent(cookie.substring('csrftoken='.length));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+    </script>
 
 {% block content %}{% endblock %}
 

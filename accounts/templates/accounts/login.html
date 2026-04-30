@@ -1,17 +1,71 @@
-{% extends "accounts/base.html" %}
+{% extends 'accounts/base.html' %}
+{% block title %}Login{% endblock %}
 
 {% block content %}
-<h2>Login</h2>
 
-<form method="POST">
-  {% csrf_token %}
+<div class="min-h-screen flex items-center justify-center">
 
-  <input type="email" name="email" placeholder="Email">
-  <input type="password" name="password" placeholder="Password">
+<div class="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
 
-  <button type="submit">Login</button>
+<h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
+
+<form id="loginForm">
+    {% csrf_token %}
+
+    <input class="w-full p-3 mb-3 border rounded"
+           name="email"
+           placeholder="Email"
+           type="email"
+           required>
+
+    <input class="w-full p-3 mb-3 border rounded"
+           name="password"
+           placeholder="Password"
+           type="password"
+           required>
+
+    <button class="w-full bg-black text-white p-3 rounded">
+        Login
+    </button>
+
+    <p id="loginMsg" class="text-red-500 mt-2"></p>
 </form>
-<a href="/accounts/forgot/">
-    Forgot Password?
+
+<a href="/accounts/forgot/"
+   class="text-sm text-blue-500 block text-center mt-3 hover:underline">
+   Forgot Password?
 </a>
+
+<a href="/accounts/register/"
+   class="text-blue-500 block text-center mt-4">
+   Create account
+</a>
+
+</div>
+</div>
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    const res = await fetch("", {
+        method: "POST",
+        body: new URLSearchParams(formData),
+        credentials: "same-origin",
+        headers: {
+            "X-CSRFToken": getCSRFToken()
+        }
+    });
+
+    if (res.redirected) {
+        window.location.href = res.url;
+        return;
+    }
+
+    document.getElementById("loginMsg").innerText = "Invalid credentials";
+});
+</script>
+
 {% endblock %}

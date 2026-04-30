@@ -1,22 +1,42 @@
-{% extends "accounts/base.html" %}
+{% extends 'accounts/base.html' %}
+{% block title %}Verify OTP{% endblock %}
 
 {% block content %}
-<h2>Verify OTP</h2>
 
-<form method="POST">
-    {% csrf_token %}
+<div class="min-h-screen flex items-center justify-center">
 
-    <input name="otp" placeholder="Enter OTP"><br>
+<div class="bg-white p-8 rounded-xl shadow-md w-full max-w-md text-center">
 
-    <button>Verify</button>
+<h2 class="text-xl font-bold mb-4">Verify OTP</h2>
+
+<form id="otpForm">
+    <input id="otp" class="w-full p-3 mb-3 border rounded text-center" name="otp" placeholder="Enter OTP" maxlength="6" required>
+    <button class="w-full bg-green-600 text-white p-3 rounded">Verify</button>
+    <p id="otpMsg" class="text-red-500 mt-2"></p>
 </form>
 
+</div>
+</div>
+
 <script>
-document.querySelector("form").addEventListener("submit", function(e){
-    let otp = document.querySelector("[name=otp]").value;
-    if(otp.length !== 6){
-        alert("OTP must be 6 digits");
-        e.preventDefault();
+document.getElementById("otpForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    const res = await fetch("", {
+        method: "POST",
+        body: new URLSearchParams(formData),
+        credentials: "same-origin",
+        headers: {
+            "X-CSRFToken": getCSRFToken()
+        }
+    });
+
+    if (res.redirected) {
+        window.location.href = res.url;
+    } else {
+        document.getElementById("otpMsg").innerText = "Invalid OTP";
     }
 });
 </script>

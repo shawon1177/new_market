@@ -1,3 +1,4 @@
+
 import random
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, get_user_model
@@ -5,30 +6,26 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import timedelta
-
+from django.core.cache import cache
 from .models import OTP, Profile
 
 User = get_user_model()
 
 
 # OTP GENERATOR 
-def generate_otp(user, purpose="verify"):
-    
-    OTP.objects.filter(user=user, purpose=purpose).delete()
+def generate_otp(email, purpose="verify"):
+    OTP.objects.filter(email=email, purpose=purpose).delete()
 
-   
     code = str(random.randint(100000, 999999))
 
     otp = OTP.objects.create(
-        user=user,
+        email=email,
         code=code,
         purpose=purpose
     )
 
-    print("NEW OTP:", code)  
-
+    print("NEW OTP:", code)
     return otp
-
 
 
 
@@ -36,22 +33,22 @@ def generate_otp(user, purpose="verify"):
 def resend_otp(request, user_id):
     user = User.objects.get(id=user_id)
 
-    last_otp = OTP.objects.filter(user=user).order_by('-created_at').first()
+    last_otp = OTP.objects.filter(email=user.email).order_by('-created_at').first()
 
     if last_otp and (timezone.now() - last_otp.created_at).seconds < 60:
         messages.error(request, "Wait 60 seconds before resending OTP")
         return redirect(request.META.get('HTTP_REFERER'))
 
-    OTP.objects.filter(user=user, is_used=False).update(is_used=True)
+    OTP.objects.filter(email=user.email, is_used=False).update(is_used=True)
 
-    generate_otp(user, "verify")
+    generate_otp(user.email, "verify")
 
     messages.success(request, "OTP resent successfully")
     return redirect(f"/accounts/verify/{user.id}/")
 
 
 #  REGISTER 
-import random
+
 
 def register(request):
     if request.method == "POST":
@@ -59,15 +56,16 @@ def register(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
 
+       
         if User.objects.filter(email=email).exists():
             messages.error(request, "Email already exists")
             return redirect("register")
 
         user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password
-        )
+           username=username,
+           email=email,
+           password=password
+      )
 
         user.is_active = False
         user.is_email_verified = False
@@ -75,14 +73,9 @@ def register(request):
 
         generate_otp(user, "verify")
 
-        print("REGISTER OTP GENERATED (DB)")
-
-        print("REGISTER HIT - OTP CALLING")
-
         return redirect(f"/accounts/verify/{user.id}/")
 
     return render(request, "accounts/register.html")
-
 
 # VERIFY OTP FOR REGISTRATION
 def verify_otp(request, user_id):
@@ -94,13 +87,19 @@ def verify_otp(request, user_id):
         print("ENTERED OTP:", code)
 
         otp = OTP.objects.filter(
-            user=user,
+            email=user.email,
             code=code,
             purpose="verify",
             is_used=False
         ).order_by("-created_at").first()
 
-        print("DB OTPs:", list(OTP.objects.filter(user=user).values("code", "is_used")))
+        print(
+            "DB OTPs:",
+            list(
+                OTP.objects.filter(email=user.email)
+                .values("email", "code", "is_used", "created_at")
+            )
+        )
 
         if otp and otp.is_valid():
             user.is_active = True
@@ -112,16 +111,19 @@ def verify_otp(request, user_id):
 
             login(request, user)
 
-            OTP.objects.filter(user=user, purpose="verify").delete()
+            OTP.objects.filter(email=user.email, purpose="verify").delete()
+
+            print("OTP VERIFIED SUCCESSFULLY")
 
             return redirect("/accounts/profile/")
 
+        print("INVALID OTP ENTERED")
         messages.error(request, "Invalid OTP")
 
     return render(request, "accounts/verify.html")
 
 # LOGIN 
-from django.core.cache import cache
+
 
 def login_view(request):
     if request.method == "POST":
@@ -159,7 +161,6 @@ def forgot_password(request):
 
     return render(request, "accounts/forgot_password.html")
 
-
 # RESET OTP 
 def reset_otp(request, user_id):
     user = get_object_or_404(User, id=user_id)
@@ -168,7 +169,7 @@ def reset_otp(request, user_id):
         code = request.POST.get("otp", "").strip()
 
         otp = OTP.objects.filter(
-            user=user,
+            email=user.email,
             code=code,
             purpose="reset",
             is_used=False
