@@ -29,7 +29,10 @@ SECRET_KEY = 'django-insecure-nk#l6bm9krv+trvundl4$qj(cjov4bz2@9_7jlh49=tm51d*=_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "foods-marketplace.onrender.com",
+    ".onrender.com",
+]
 
 AUTH_USER_MODEL = "accounts.User"
 CSRF_COOKIE_SECURE = False
