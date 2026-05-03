@@ -1,29 +1,63 @@
-<html>
+<!-- ===================== BASE TEMPLATE ===================== -->
+<!-- templates/accounts/base.html -->
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>{% block title %}Accounts{% endblock %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Auth System</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
 
-    <script>
-        function getCSRFToken() {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            cookie = cookie.trim();
-            if (cookie.startsWith('csrftoken=')) {
-                cookieValue = decodeURIComponent(cookie.substring('csrftoken='.length));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-    </script>
+<!-- TOP NAVBAR (ONLY AFTER LOGIN) -->
+{% if request.user.is_authenticated %}
+<div class="bg-white shadow-md sticky top-0 z-50">
+    <div class="flex justify-between items-center px-4 py-3">
 
-{% block content %}{% endblock %}
+        <a href="{% url 'dashboard' %}" class="font-bold text-lg">MyApp</a>
+
+        <div class="flex items-center gap-4">
+
+            <a href="{% url 'dashboard' %}" class="text-sm hover:text-blue-600">Dashboard</a>
+          
+
+           
+
+            <!-- PROFILE ICON -->
+            <a href="{% url 'profile' %}">
+                <div class="w-9 h-9 rounded-full bg-gray-300 overflow-hidden flex items-center justify-center">
+                    👤
+                </div>
+            </a>
+
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- PAGE CONTENT -->
+<div class="p-4">
+    {% block content %}{% endblock %}
+</div>
+
+<script>
+
+
+function showToast(message) {
+    const toast = document.createElement("div");
+    toast.innerText = message;
+    toast.className = "fixed bottom-5 right-5 bg-black text-white px-4 py-2 rounded shadow";
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+document.addEventListener("click", function(e){
+    if(e.target.tagName === "BUTTON"){
+        e.target.classList.add("scale-95");
+        setTimeout(()=> e.target.classList.remove("scale-95"), 100);
+    }
+});
+</script>
 
 </body>
 </html>

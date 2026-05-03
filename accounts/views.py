@@ -60,6 +60,10 @@ def register(request):
         if User.objects.filter(email=email).exists():
             messages.error(request, "Email already exists")
             return redirect("register")
+        
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists")
+            return redirect("register")
 
         user = User.objects.create_user(
            username=username,
@@ -71,7 +75,7 @@ def register(request):
         user.is_email_verified = False
         user.save()
 
-        generate_otp(user, "verify")
+        generate_otp(user.email, "verify")
 
         return redirect(f"/accounts/verify/{user.id}/")
 
@@ -109,18 +113,18 @@ def verify_otp(request, user_id):
             otp.is_used = True
             otp.save()
 
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
             OTP.objects.filter(email=user.email, purpose="verify").delete()
 
             print("OTP VERIFIED SUCCESSFULLY")
 
-            return redirect("/accounts/profile/")
+            return redirect("/accounts/dashboard/")
 
         print("INVALID OTP ENTERED")
         messages.error(request, "Invalid OTP")
 
-    return render(request, "accounts/verify.html")
+    return render(request, "accounts/verify.html", {"user": user})
 
 # LOGIN 
 
@@ -130,18 +134,14 @@ def login_view(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            messages.error(request, "Invalid credentials")
-            return redirect("login")
+        user = authenticate(request, username=email, password=password)
 
-        if not user.check_password(password):
-            messages.error(request, "Invalid credentials")
+        if user is None:
+            messages.error(request, "Invalid email or password")
             return redirect("login")
 
         login(request, user)
-        return redirect("/accounts/profile/")
+        return redirect("/accounts/dashboard/")
 
     return render(request, "accounts/login.html")
 # FORGOT PASSWORD
@@ -155,7 +155,7 @@ def forgot_password(request):
             messages.error(request, "User not found")
             return redirect("forgot_password")
 
-        generate_otp(user, "reset")
+        generate_otp(user.email, "reset")
 
         return redirect(f"/accounts/reset-otp/{user.id}/")
 
@@ -186,7 +186,6 @@ def reset_otp(request, user_id):
         messages.error(request, "Invalid OTP")
 
     return render(request, "accounts/reset_otp.html")
-
 def set_new_password(request):
     user_id = request.session.get("reset_user_id")
 
@@ -203,15 +202,22 @@ def set_new_password(request):
             messages.error(request, "Passwords do not match")
             return redirect("set_new_password")
 
+       
         user.set_password(password)
         user.save()
 
-        del request.session["reset_user_id"]
+        
+        request.session.pop("reset_user_id", None)
+
+      
+        logout(request)
 
         messages.success(request, "Password reset successful")
+
         return redirect("login")
 
     return render(request, "accounts/set_new_password.html")
+
 
 #  LOGOUT 
 def logout_view(request):
@@ -225,3 +231,8 @@ def profile(request):
     profile, _ = Profile.objects.get_or_create(user=request.user)
 
     return render(request, "accounts/profile.html", {"profile": profile})
+
+# DASHBOARD
+@login_required
+def dashboard(request):
+    return render(request, "accounts/dashboard.html")

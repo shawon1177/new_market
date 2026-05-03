@@ -41,6 +41,7 @@ DEFAULT_FROM_EMAIL = "test@market.com"
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = False
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -57,6 +58,7 @@ INSTALLED_APPS = [
 ]
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
+    'accounts.backends.EmailBackend'
 ]
 
 MIDDLEWARE = [

@@ -9,9 +9,10 @@ urlpatterns = [
     path("verify/<int:user_id>/", views.verify_otp, name="verify"),
     path("resend/<int:user_id>/", views.resend_otp, name="resend"),
 
-    path("forgot-password/", views.forgot_password, name="forgot_password"),
+    path("forgot/", views.forgot_password, name="forgot"),
     path("reset-otp/<int:user_id>/", views.reset_otp, name="reset_otp"),
     path("set-new-password/", views.set_new_password, name="set_new_password"),
-
+    path("dashboard/", views.dashboard, name="dashboard"),
     path("profile/", views.profile, name="profile"),
+
 ]

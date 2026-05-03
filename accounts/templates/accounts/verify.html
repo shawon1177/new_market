@@ -1,44 +1,21 @@
 {% extends 'accounts/base.html' %}
-{% block title %}Verify OTP{% endblock %}
-
 {% block content %}
 
-<div class="min-h-screen flex items-center justify-center">
-
-<div class="bg-white p-8 rounded-xl shadow-md w-full max-w-md text-center">
-
+<div class="max-w-md mx-auto bg-white p-6 rounded shadow">
 <h2 class="text-xl font-bold mb-4">Verify OTP</h2>
 
-<form id="otpForm">
-    <input id="otp" class="w-full p-3 mb-3 border rounded text-center" name="otp" placeholder="Enter OTP" maxlength="6" required>
-    <button class="w-full bg-green-600 text-white p-3 rounded">Verify</button>
-    <p id="otpMsg" class="text-red-500 mt-2"></p>
+<form method="POST">
+    {% csrf_token %}
+
+    <input name="otp" placeholder="Enter OTP" class="w-full p-3 border mb-3">
+
+    <button class="w-full bg-blue-600 text-white p-3">Verify</button>
 </form>
+{% if user %}
+<a href="{% url 'resend' user.id %}">Resend OTP</a>
+{% endif %}
 
+<a href="{% url 'resend' user.id %}" class="text-sm text-blue-500">Resend OTP</a>
 </div>
-</div>
-
-<script>
-document.getElementById("otpForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.target);
-
-    const res = await fetch("", {
-        method: "POST",
-        body: new URLSearchParams(formData),
-        credentials: "same-origin",
-        headers: {
-            "X-CSRFToken": getCSRFToken()
-        }
-    });
-
-    if (res.redirected) {
-        window.location.href = res.url;
-    } else {
-        document.getElementById("otpMsg").innerText = "Invalid OTP";
-    }
-});
-</script>
 
 {% endblock %}

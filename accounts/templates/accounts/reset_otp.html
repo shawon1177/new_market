@@ -1,34 +1,17 @@
 {% extends 'accounts/base.html' %}
 {% block content %}
 
-<div class="min-h-screen flex items-center justify-center">
-<div class="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
-
+<div class="max-w-md mx-auto bg-white p-6 rounded shadow">
 <h2 class="text-xl font-bold mb-4">Reset OTP</h2>
 
-<form id="resetOtpForm">
+<form method="POST">
     {% csrf_token %}
-    <input class="w-full p-3 mb-3 border rounded" name="otp" placeholder="OTP" required>
-    <button class="w-full bg-black text-white p-3 rounded">Verify</button>
+
+    <input name="otp" placeholder="Enter OTP" class="w-full p-3 border mb-3">
+
+    <button class="w-full bg-blue-600 text-white p-3">Verify OTP</button>
 </form>
 
 </div>
-</div>
-
-<script>
-document.getElementById("resetOtpForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-
-    const res = await fetch(window.location.pathname, {
-        method: "POST",
-        body: formData
-    });
-
-    if(res.redirected){
-        window.location.href = res.url;
-    }
-});
-</script>
 
 {% endblock %}
