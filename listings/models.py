@@ -1,4 +1,5 @@
 from django.db import models
+from accounts.models import User
 from django.conf import settings
 
 CATEGORY_CHOICES = [
@@ -8,33 +9,36 @@ CATEGORY_CHOICES = [
     ('beverage', 'Beverage'),
 ]
 
-
-class FoodItem(models.Model):
-    seller = models.ForeignKey(
+class Product(models.Model):
+    owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='foods',
-        db_index=True
+        null=True,
+        blank=True,
+        related_name="products"
     )
 
-    title = models.CharField(max_length=200, db_index=True)
+    title = models.CharField(max_length=200)
     description = models.TextField()
 
-    price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        db_index=True
-    )
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
 
-    image = models.ImageField(upload_to='foods/')
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    stock = models.PositiveIntegerField(default=0)
 
-    availability_status = models.BooleanField(default=True, db_index=True)
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, db_index=True, default='veg' )
-    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
-    updated_at = models.DateTimeField(auto_now=True, db_index=True)
+    image = models.ImageField(upload_to="products/", null=True, blank=True)
 
-    class Meta:
-        indexes = [
-            models.Index(fields=['price']),
-            models.Index(fields=['availability_status']),
-        ]
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+
+    def __str__(self):
+        return self.title
+    
+class Order(models.Model):
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.buyer} bought {self.product.title}"    

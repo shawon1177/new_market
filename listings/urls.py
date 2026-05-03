@@ -1,7 +1,13 @@
 from django.urls import path
-from .views import food_list, create_food
+from . import views
+
+
+app_name = 'listings'
 
 urlpatterns = [
-    path('', food_list, name='food_list'),
-    path('create/', create_food, name='create_food'),
+    path("dashboard/", views.dashboard, name="dashboard"),
+    path("add/", views.add_product, name="add_product"),
+    path("product/<int:pk>/", views.product_detail, name="product_detail"),
+    path("delete/<int:pk>/", views.delete_product, name="delete_product"),
+    path("buy/<int:pk>/", views.buy_product, name="buy_product"),
 ]

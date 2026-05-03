@@ -119,7 +119,7 @@ def verify_otp(request, user_id):
 
             print("OTP VERIFIED SUCCESSFULLY")
 
-            return redirect("/accounts/dashboard/")
+            return redirect("/listings/dashboard/")
 
         print("INVALID OTP ENTERED")
         messages.error(request, "Invalid OTP")
@@ -141,7 +141,7 @@ def login_view(request):
             return redirect("login")
 
         login(request, user)
-        return redirect("/accounts/dashboard/")
+        return redirect("/listings/dashboard/")
 
     return render(request, "accounts/login.html")
 # FORGOT PASSWORD
@@ -235,4 +235,4 @@ def profile(request):
 # DASHBOARD
 @login_required
 def dashboard(request):
-    return render(request, "accounts/dashboard.html")
+    return render(request, "listings/dashboard.html")
