@@ -121,8 +121,9 @@ def verify_otp(request, user_id):
 
             return redirect("/listings/dashboard/")
 
-        print("INVALID OTP ENTERED")
-        messages.error(request, "Invalid OTP")
+        else:
+            print("INVALID OTP ENTERED")
+            messages.error(request, "Invalid OTP. Please try again.")
 
     return render(request, "accounts/verify.html", {"user": user})
 

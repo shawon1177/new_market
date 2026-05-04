@@ -5,7 +5,7 @@
 
     <h1 class="text-2xl font-bold mb-4">➕ Add Product</h1>
 
-    <form method="POST" enctype="multipart/form-data" class="space-y-4">
+    <form method="POST" enctype="multipart/form-data" onsubmit="showLoader()" class="space-y-4">
 
         {% csrf_token %}
 
@@ -42,5 +42,10 @@
     </form>
 
 </div>
+    <script>
+function showLoader(){
+    document.body.style.opacity = "0.6";
+}
+</script>
 
 {% endblock %}

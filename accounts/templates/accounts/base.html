@@ -183,6 +183,11 @@
             document.getElementById("globalLoader").style.display = "flex";
         });
     });
+    document.addEventListener("error", function (e) {
+    if (e.target.tagName === "IMG") {
+        e.target.style.display = "none";
+    }
+}, true);
 </script>
 
 </body>

@@ -3,8 +3,12 @@
 
 <div class="p-6 max-w-3xl mx-auto">
 
-    <img src="{{ product.image.url }}"
-         class="w-full h-80 object-cover rounded">
+   <img src="{{ p.image.url }}"
+     loading="lazy"
+     decoding="async"
+     fetchpriority="high"
+     class="w-100 h-100"
+     style="object-fit:cover;">
 
     <h1 class="text-3xl font-bold mt-4">{{ product.title }}</h1>
 

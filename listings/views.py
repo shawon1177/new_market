@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from .models import Product, Order
+from django.core.paginator import Paginator
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 
@@ -13,23 +15,29 @@ from django.views.decorators.cache import cache_control
 def dashboard(request):
     query = request.GET.get("q")
 
-    products = Product.objects.all().order_by("-id")
+    # ⚡ FIX: remove N+1 query problem
+    products = Product.objects.select_related('owner').only(
+        "id", "title", "price", "image", "description", "created_at", "owner__email"
+    ).order_by("-id")
 
     if query:
         products = products.filter(title__icontains=query)
 
-    response = render(request, "listings/dashboard.html", {
+
+    paginator = Paginator(products, 12)
+    page = request.GET.get("page")
+    products = paginator.get_page(page)
+
+    return render(request, "listings/dashboard.html", {
         "products": products
     })
-    response["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    response["Pragma"] = "no-cache"
-    response["Expires"] = "0"
 
-    return response
-# ➕ ADD PRODUCT (ANY USER CAN DO)
+# ➕ ADD PRODUCT
+
 @login_required
 def add_product(request):
     if request.method == "POST":
+
         Product.objects.create(
             owner=request.user,
             title=request.POST.get("title"),
@@ -37,10 +45,10 @@ def add_product(request):
             category=request.POST.get("category"),
             price=request.POST.get("price"),
             stock=request.POST.get("stock"),
-            image=request.FILES.get("image")  # safe now
+            image=request.FILES.get("image")
         )
 
-        return redirect("listings:dashboard")
+        return redirect(reverse("listings:dashboard") + "?fast=1")
 
     return render(request, "listings/add_product.html")
 

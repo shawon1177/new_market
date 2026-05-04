@@ -4,6 +4,16 @@
 <div class="max-w-md mx-auto bg-white p-6 rounded shadow">
 <h2 class="text-xl font-bold mb-4">Verify OTP</h2>
 
+{% if messages %}
+<div class="mb-3">
+    {% for message in messages %}
+        <div class="p-3 rounded bg-red-100 text-red-700">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
 <form method="POST">
     {% csrf_token %}
 
