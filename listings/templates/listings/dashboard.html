@@ -1,53 +1,6 @@
 {% extends "accounts/base.html" %}
 {% block content %}
 
-<style>
-/* =========================
-   GLOBAL SQUARE FIX
-========================= */
-
-.product-card {
-    aspect-ratio: 1 / 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border-radius: 10px;
-}
-
-/* prevent bootstrap stretching */
-.row > div {
-    display: flex;
-}
-
-.card {
-    width: 100%;
-    height: 100%;
-}
-
-/* image square fix */
-.product-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* body layout fix */
-.card-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 8px;
-}
-
-/* prevent weird mobile stretching */
-@media (max-width: 768px) {
-    .product-card {
-        aspect-ratio: 1 / 1;
-    }
-}
-</style>
-
 <div class="container py-4">
 
     <h1 class="h4 fw-bold mb-4">All Products</h1>
@@ -64,52 +17,65 @@
 
         <div class="col-lg-3 col-md-4 col-6">
 
-            <div class="card shadow-sm border-0 product-card">
+            <!-- SQUARE CARD -->
+            <div class="card shadow-sm border-0 h-100 overflow-hidden">
 
-                <!-- IMAGE -->
+                <!-- IMAGE (SQUARE) -->
                 <div class="ratio ratio-1x1 bg-light">
 
                     {% if p.image %}
-                        <img src="{{ p.image.url }}" class="product-img">
+                        <img src="{{ p.image.url }}"
+                             class="w-100 h-100"
+                             style="object-fit: cover;">
                     {% else %}
-                        <img src="https://via.placeholder.com/400" class="product-img">
+                        <img src="https://via.placeholder.com/400"
+                             class="w-100 h-100"
+                             style="object-fit: cover;">
                     {% endif %}
 
                 </div>
 
                 <!-- BODY -->
-                <div class="card-body">
+                <div class="card-body p-2 d-flex flex-column">
 
+                    <!-- TITLE -->
                     <h6 class="fw-bold mb-1 text-truncate">
                         {{ p.title }}
                     </h6>
 
-                    <p class="text-success fw-bold mb-1 small">
+                    <!-- PRICE -->
+                    <div class="text-success fw-bold small mb-1">
                         ৳ {{ p.price }}
-                    </p>
-
-                    <p class="text-muted small mb-2">
-                        {{ p.description|truncatechars:50 }}
-                    </p>
-
-                    <div class="text-muted small mb-2">
-                        {{ p.owner.email }}
                     </div>
 
-                    <div class="d-flex gap-1 mt-auto">
+                    <!-- DESCRIPTION (SHORT) -->
+                    <p class="text-muted small mb-2">
+                        {{ p.description|truncatechars:40 }}
+                    </p>
+
+                    <!-- SELLER INFO -->
+                    <div class="small text-secondary mb-1">
+                        Seller: {{ p.owner.username }}
+                    </div>
+
+                    <!-- DATE ONLY (NO TIME/YEAR DETAIL CLUTTER) -->
+                    <div class="small text-muted mb-2">
+                        {{ p.created_at|date:"d M" }}
+                    </div>
+
+                    <!-- BUTTONS -->
+                    <div class="mt-auto d-flex gap-1">
 
                         {% if p.owner != user %}
-                        <a href="{% url 'listings:buy_product' p.id %}"
-                           class="btn btn-primary btn-sm w-50">
-                            Buy
-                        </a>
-                        {% endif %}
-
-                        {% if p.owner == user %}
-                        <a href="{% url 'listings:delete_product' p.id %}"
-                           class="btn btn-danger btn-sm w-50">
-                            Delete
-                        </a>
+                            <a href="{% url 'listings:buy_product' p.id %}"
+                               class="btn btn-primary btn-sm w-100">
+                                Buy
+                            </a>
+                        {% else %}
+                            <a href="{% url 'listings:delete_product' p.id %}"
+                               class="btn btn-danger btn-sm w-100">
+                                Delete
+                            </a>
                         {% endif %}
 
                     </div>

@@ -10,15 +10,35 @@
 
     <input name="username" placeholder="Username" class="w-full p-3 border mb-3">
     <input name="email" placeholder="Email" class="w-full p-3 border mb-3">
-    <input name="password" type="password" placeholder="Password" class="w-full p-3 border mb-3">
+
+    <!-- PASSWORD FIELD WITH TOGGLE -->
+    <div class="relative mb-3">
+        <input id="regPassword" name="password" type="password"
+               placeholder="Password"
+               class="w-full p-3 border pr-10">
+
+        <button type="button"
+                onclick="togglePassword('regPassword', this)"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+
+            <!-- EYE ICON -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+
+        </button>
+    </div>
 
     <button class="w-full bg-green-600 text-white p-3">Register</button>
 </form>
+
 {% if messages %}
-<div class="mb-3">
+<div class="mb-3 mt-3">
     {% for message in messages %}
-        <div class="
-            p-3 rounded text-sm
+        <div class="p-3 rounded text-sm
             {% if message.tags == 'error' %}
                 bg-red-100 text-red-700
             {% else %}
@@ -30,11 +50,24 @@
     {% endfor %}
 </div>
 {% endif %}
+
 <p class="text-sm mt-3 text-center">
     Already have an account?
     <a href="{% url 'login' %}" class="text-blue-600">Login</a>
 </p>
 
 </div>
+
+<script>
+function togglePassword(fieldId, btn) {
+    const input = document.getElementById(fieldId);
+
+    if (input.type === "password") {
+        input.type = "text";
+    } else {
+        input.type = "password";
+    }
+}
+</script>
 
 {% endblock %}
