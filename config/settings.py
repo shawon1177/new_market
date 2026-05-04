@@ -112,10 +112,9 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASE_URL = os.environ.get("postgresql://foodmarket_xkj5_user:9hRhpD7gtv3G6P8IxQ7pTDax0r2xgjZH@dpg-d7saeehj2pic73fs6qq0-a.singapore-postgres.render.com/foodmarket_xkj5")
-# Default (fallback for local dev)
+DATABASE_URL = config("DATABASE_URL", default=None)
+
 if DATABASE_URL:
-    # 🔥 Render / Production (PostgreSQL)
     DATABASES = {
         'default': dj_database_url.parse(
             DATABASE_URL,
@@ -124,7 +123,6 @@ if DATABASE_URL:
         )
     }
 else:
-    # 🖥️ Local (SQLite)
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
