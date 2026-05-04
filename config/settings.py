@@ -88,7 +88,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'config.urls'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': config('Root'),
+    'CLOUD_NAME': config('dob1z35ro'),
     'API_KEY': config('191844463265151'),
     'API_SECRET': config('lde2uEz4sVcHqYkNNkxJajZEO4w'),
 }
