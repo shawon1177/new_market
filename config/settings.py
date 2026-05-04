@@ -66,6 +66,8 @@ INSTALLED_APPS = [
     'accounts',
     'listings',
     'chat',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -84,7 +86,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'config.urls'
-
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('Root'),
+    'API_KEY': config('191844463265151'),
+    'API_SECRET': config('lde2uEz4sVcHqYkNNkxJajZEO4w'),
+}
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
