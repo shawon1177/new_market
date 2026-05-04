@@ -15,73 +15,62 @@
 
         {% for p in products %}
 
-        <div class="col-lg-3 col-md-4 col-6">
+        <div class="col-6 col-md-4 col-lg-3">
 
-            <!-- SQUARE CARD -->
-            <div class="card shadow-sm border-0 h-100 overflow-hidden">
+            <!-- SQUARE PRODUCT CARD -->
+            <div class="product-card shadow-sm border-0">
 
-                <!-- IMAGE (SQUARE) -->
-                <div class="ratio ratio-1x1 bg-light">
-
+                <!-- IMAGE -->
+                <div class="product-image">
                     {% if p.image %}
-                        <img src="{{ p.image.url }}"
-                             class="w-100 h-100"
-                             style="object-fit: cover;">
+                        <img src="{{ p.image.url }}">
                     {% else %}
-                        <img src="https://via.placeholder.com/400"
-                             class="w-100 h-100"
-                             style="object-fit: cover;">
+                        <img src="https://via.placeholder.com/400">
                     {% endif %}
-
                 </div>
 
-                <!-- BODY -->
-                <div class="card-body p-2 d-flex flex-column">
+                <!-- CONTENT -->
+                <div class="product-body">
 
-                    <!-- TITLE -->
-                    <h6 class="fw-bold mb-1 text-truncate">
-                        {{ p.title }}
-                    </h6>
+                    <h6 class="title">{{ p.title }}</h6>
 
-                    <!-- PRICE -->
-                    <div class="text-success fw-bold small mb-1">
-                        ৳ {{ p.price }}
-                    </div>
-
-                    <!-- DESCRIPTION (SHORT) -->
-                    <p class="text-muted small mb-2">
-                        {{ p.description|truncatechars:40 }}
-                    </p>
+                    <div class="price">৳ {{ p.price }}</div>
 
                     <!-- SELLER INFO -->
-                    <div class="small text-secondary mb-1">
-                        Seller: {{ p.owner.username }}
+                    <div class="seller">
+                        Seller: {{ p.owner.email }}
                     </div>
 
-                    <!-- DATE ONLY (NO TIME/YEAR DETAIL CLUTTER) -->
-                    <div class="small text-muted mb-2">
-                        {{ p.created_at|date:"d M" }}
+                    <!-- DATE ONLY -->
+                    <div class="date">
+                        {{ p.created_at|date:"d M Y" }}
+                    </div>
+
+                    <!-- DESCRIPTION (LIMITED) -->
+                    <div class="desc">
+                        {{ p.description|truncatechars:60 }}
                     </div>
 
                     <!-- BUTTONS -->
-                    <div class="mt-auto d-flex gap-1">
+                    <div class="actions">
 
                         {% if p.owner != user %}
-                            <a href="{% url 'listings:buy_product' p.id %}"
-                               class="btn btn-primary btn-sm w-100">
-                                Buy
-                            </a>
-                        {% else %}
-                            <a href="{% url 'listings:delete_product' p.id %}"
-                               class="btn btn-danger btn-sm w-100">
-                                Delete
-                            </a>
+                        <a href="{% url 'listings:buy_product' p.id %}"
+                           class="btn btn-primary btn-sm w-100">
+                            Buy
+                        </a>
+                        {% endif %}
+
+                        {% if p.owner == user %}
+                        <a href="{% url 'listings:delete_product' p.id %}"
+                           class="btn btn-danger btn-sm w-100">
+                            Delete
+                        </a>
                         {% endif %}
 
                     </div>
 
                 </div>
-
             </div>
         </div>
 
@@ -91,6 +80,90 @@
 
     </div>
 </div>
+
+<style>
+
+/* GRID FIX */
+.product-card{
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+
+/* IMAGE TOP */
+.product-image{
+    flex: 1;
+    min-height: 0;
+}
+
+.product-image img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* BODY BOTTOM */
+.product-body{
+    flex: 1;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* TEXT SIZE RESPONSIVE */
+.title{
+    font-size: clamp(12px, 1.2vw, 16px);
+    font-weight: 700;
+    margin: 0;
+}
+
+.price{
+    font-size: clamp(12px, 1.1vw, 15px);
+    color: #198754;
+    font-weight: 600;
+}
+
+.seller, .date{
+    font-size: clamp(10px, 1vw, 12px);
+    color: #666;
+}
+
+/* DESCRIPTION */
+.desc{
+    font-size: clamp(10px, 1vw, 12px);
+    color: #444;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* BUTTON ALWAYS VISIBLE */
+.actions{
+    display: flex;
+    gap: 5px;
+    margin-top: auto;
+}
+
+/* MOBILE FIX */
+@media (max-width: 576px){
+    .product-body{
+        padding: 6px;
+    }
+
+    .btn{
+        font-size: 11px;
+        padding: 4px;
+    }
+}
+
+.hidden{
+    display: none;
+}
+
+</style>
 
 <script>
 window.addEventListener("load", function () {
