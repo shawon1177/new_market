@@ -83,7 +83,19 @@
 
 <style>
 
-/* GRID FIX */
+/* GRID RESPONSIVE (1 per row on mobile) */
+.col-6{
+    padding: 6px;
+}
+
+@media (max-width: 576px){
+    .col-6{
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+/* ===== SQUARE CARD ===== */
 .product-card{
     aspect-ratio: 1 / 1;
     display: flex;
@@ -93,51 +105,56 @@
     background: #fff;
 }
 
-/* IMAGE TOP */
+/* ===== IMAGE FIX (FULL FIT INSIDE SQUARE AREA) ===== */
 .product-image{
-    flex: 1;
-    min-height: 0;
+    flex: 0 0 55%;
+    position: relative;
+    overflow: hidden;
 }
 
 .product-image img{
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;   /* 🔥 IMPORTANT: no crop */
+    background: #f8f8f8;
 }
 
-/* BODY BOTTOM */
+/* ===== CONTENT ===== */
 .product-body{
     flex: 1;
-    padding: 8px;
+    padding: 6px;
     display: flex;
     flex-direction: column;
     gap: 2px;
+    overflow: hidden;
 }
 
-/* TEXT SIZE RESPONSIVE */
+/* TEXT */
 .title{
-    font-size: clamp(12px, 1.2vw, 16px);
+    font-size: clamp(12px, 1.2vw, 15px);
     font-weight: 700;
     margin: 0;
+    line-height: 1.1;
 }
 
 .price{
-    font-size: clamp(12px, 1.1vw, 15px);
+    font-size: clamp(12px, 1vw, 14px);
     color: #198754;
     font-weight: 600;
 }
 
-.seller, .date{
-    font-size: clamp(10px, 1vw, 12px);
+.seller,
+.date{
+    font-size: 11px;
     color: #666;
 }
 
 /* DESCRIPTION */
 .desc{
-    font-size: clamp(10px, 1vw, 12px);
+    font-size: 11px;
     color: #444;
-    flex: 1;
     overflow: hidden;
+    flex: 1;
 }
 
 /* BUTTON ALWAYS VISIBLE */
@@ -147,15 +164,16 @@
     margin-top: auto;
 }
 
-/* MOBILE FIX */
+/* BUTTON FIX */
+.btn{
+    font-size: 11px;
+    padding: 4px 6px;
+}
+
+/* MOBILE TIGHT FIX */
 @media (max-width: 576px){
     .product-body{
-        padding: 6px;
-    }
-
-    .btn{
-        font-size: 11px;
-        padding: 4px;
+        padding: 5px;
     }
 }
 
