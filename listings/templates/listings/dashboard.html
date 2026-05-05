@@ -4,7 +4,15 @@
 <div class="container py-4">
 
     <h1 class="h4 fw-bold mb-4">All Products</h1>
-
+{% if messages %}
+<div class="mb-3 mt-3">
+    {% for message in messages %}
+        <div class="p-3 bg-red-100 text-red-700 rounded">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
 
     <!-- LOADER -->
     <div id="productLoader" class="text-center py-5">
