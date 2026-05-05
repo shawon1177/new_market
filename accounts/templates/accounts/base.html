@@ -101,11 +101,11 @@
                 </a>
 
 <!-- PROFILE -->
-<a href="{% url 'profile' %}">
+<a href="{% url 'profile_view' %}">
     <div class="rounded-circle overflow-hidden"
          style="width:45px; height:45px;">
 
-        {% if nav_profile and nav_profile.image %}
+        {% if nav_profile and nav_profile.image and nav_profile.image.url %}
             <img src="{{ nav_profile.image.url }}"
                  class="w-100 h-100"
                  style="object-fit: cover;">

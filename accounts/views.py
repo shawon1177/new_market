@@ -252,7 +252,27 @@ def profile(request, username=None):
         "orders": orders
     })
 
-    return render(request, "accounts/profile.html", {"profile": profile})
+@login_required
+def profile_view(request):
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        request.user.username = request.POST.get("username")
+        request.user.save()
+
+        profile.bio = request.POST.get("bio")
+
+        if request.FILES.get("image"):
+            profile.image = request.FILES["image"]
+
+        profile.save()
+        return redirect("profile")
+
+    return render(request, "accounts/profile.html", {
+        "profile": profile,
+        "is_owner": True
+    })
+
 # DASHBOARD
 @login_required
 def dashboard(request):
