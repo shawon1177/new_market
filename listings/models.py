@@ -30,15 +30,42 @@ class Product(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
 
     def __str__(self):
         return self.title
-    
-class Order(models.Model):
-    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
+
+class CartItem(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cart_items")
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ("user", "product")
+
     def __str__(self):
-        return f"{self.buyer} bought {self.product.title}"    
+        return f"{self.user} -> {self.product}"
+
+class Order(models.Model):
+
+    STATUS_CHOICES = (
+        ("pending", "Pending"),
+        ("processing", "Processing"),
+        ("shipped", "Shipped"),
+        ("delivered", "Delivered"),
+    )
+
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    address = models.TextField(default="Not provided")
+    payment_method = models.CharField(max_length=20, default="cod")
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="pending"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
