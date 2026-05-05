@@ -8,6 +8,8 @@ from django.utils import timezone
 from datetime import timedelta
 from django.core.cache import cache
 from .models import OTP, Profile
+from listings.models import Order
+
 
 User = get_user_model()
 
@@ -226,13 +228,31 @@ def logout_view(request):
     return redirect("/accounts/login/")
 
 
-# PROFILE 
+# PROFILE
+
+
 @login_required
-def profile(request):
-    profile, _ = Profile.objects.get_or_create(user=request.user)
+def profile(request, username=None):
+
+
+    if username:
+        user_obj = get_object_or_404(User, username=username)
+    else:
+        user_obj = request.user
+
+    profile, _ = Profile.objects.get_or_create(user=user_obj)
+
+    is_owner = request.user == user_obj
+    orders = Order.objects.filter(buyer=user_obj).select_related("product").order_by("-created_at")
+
+    return render(request, "accounts/profile.html", {
+        "profile": profile,
+        "user_obj": user_obj,
+        "is_owner": is_owner,
+        "orders": orders
+    })
 
     return render(request, "accounts/profile.html", {"profile": profile})
-
 # DASHBOARD
 @login_required
 def dashboard(request):

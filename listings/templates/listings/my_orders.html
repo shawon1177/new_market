@@ -1,0 +1,134 @@
+{% extends "accounts/base.html" %}
+{% block content %}
+
+<div class="container py-4">
+
+<h4 class="fw-bold mb-3">My Orders</h4>
+
+{% for o in orders %}
+
+<!-- IMPORTANT: ORDER CARD ID -->
+<div class="card mb-3 shadow-sm" id="order-{{ o.id }}">
+
+    <div class="card-body">
+
+        <div class="d-flex justify-content-between">
+
+            <div>
+                <h6 class="mb-1">{{ o.product.title }}</h6>
+                <small class="text-muted">
+                    Qty: {{ o.quantity }} | ? {{ o.product.price }}
+                </small>
+            </div>
+
+            <span class="badge
+                {% if o.status == 'pending' %} bg-warning text-dark
+                {% elif o.status == 'processing' %} bg-info
+                {% elif o.status == 'shipped' %} bg-primary
+                {% elif o.status == 'cancelled' %} bg-danger
+                {% else %} bg-success
+                {% endif %}
+            ">
+                {{ o.status }}
+            </span>
+
+        </div>
+
+        <hr>
+
+        <div class="small text-muted">
+            Address: {{ o.address }}
+        </div>
+
+        <div class="text-end mt-2 d-flex gap-2 justify-content-end">
+
+            <button class="btn btn-sm btn-outline-primary"
+                    onclick="viewOrder({{ o.id }})">
+                View Details
+            </button>
+
+            {% if o.status != "cancelled" and o.status != "delivered" %}
+            <button class="btn btn-sm btn-outline-danger"
+                    onclick="cancelOrder({{ o.id }})">
+                Cancel
+            </button>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% empty %}
+
+<p class="text-muted">No orders yet</p>
+
+{% endfor %}
+
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="orderModal">
+  <div class="modal-dialog">
+    <div class="modal-content p-3" id="orderDetailBox"></div>
+  </div>
+</div>
+
+<script>
+
+function viewOrder(id){
+
+    fetch(`/listings/order/${id}/`, {
+        headers: {"X-Requested-With": "XMLHttpRequest"}
+    })
+    .then(res => res.json())
+    .then(o => {
+
+        document.getElementById("orderDetailBox").innerHTML = `
+            <h5>${o.product}</h5>
+            <p>Qty: ${o.quantity}</p>
+            <p>Status: ${o.status}</p>
+            <p>Price: ${o.price}</p>
+            <p>Address: ${o.address}</p>
+        `;
+
+        let modalEl = document.getElementById("orderModal");
+        let modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+    });
+
+}
+
+function cancelOrder(id){
+
+    if(!confirm("Are you sure you want to cancel this order?")) return;
+
+    fetch(`/listings/order/cancel/${id}/`)
+    .then(res => res.json())
+    .then(data => {
+
+        if(data.success){
+
+            let el = document.getElementById(`order-${id}`);
+
+            if(el){
+                el.style.transition = "0.3s";
+                el.style.opacity = "0";
+                setTimeout(() => el.remove(), 300);
+            }
+
+        } else {
+            alert(data.message || "Failed to cancel order");
+        }
+
+    })
+    .catch(() => {
+        alert("Server error");
+    });
+
+}
+
+</script>
+
+{% endblock %}

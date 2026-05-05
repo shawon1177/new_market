@@ -66,10 +66,10 @@
 
                   {% if p.owner != user %}
                     <a class="btn btn-warning btn-sm w-50" href="{% url 'listings:add_to_cart' p.id %}"> Add to Cart </a>
-                   <a href="{% url 'listings:buy_product' p.id %}"
-                      class="btn btn-success btn-sm w-50">
-                      Buy
-                    </a>
+<a href="{% url 'listings:add_to_cart' p.id %}?buy_now=1"
+   class="btn btn-success btn-sm w-50">
+   Buy Now
+</a>
                    {% endif %}
 
                    {% if p.owner == user %}
@@ -199,6 +199,7 @@ window.addEventListener("load", function () {
     document.getElementById("productLoader").style.display = "none";
     document.getElementById("productContent").classList.remove("hidden");
 });
+
 
 </script>
 

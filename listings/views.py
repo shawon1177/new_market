@@ -1,13 +1,15 @@
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
-from .models import Product, Order, CartItem
+from .models import Product, Order, CartItem,Notification
 from django.core.paginator import Paginator
 from django.urls import reverse
 from django.contrib import messages
 from decimal import Decimal
 import json
 from django.http import JsonResponse
+
 
 
 
@@ -33,7 +35,7 @@ def dashboard(request):
         "products": products
     })
 
-# ➕ ADD PRODUCT
+# ADD PRODUCT
 
 @login_required
 def add_product(request):
@@ -57,7 +59,6 @@ def add_product(request):
 def delete_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
 
-    # শুধু owner delete করতে পারবে
     if product.owner != request.user:
         return redirect("listings:dashboard")
 
@@ -80,12 +81,14 @@ def add_to_cart(request, pk):
 
     if created:
         messages.success(request, "Added to cart")
-        return redirect("listings:cart")
     else:
         messages.info(request, "Already in cart")
-        return redirect("listings:dashboard")
 
+ 
+    if request.GET.get("buy_now") == "1":
+        return redirect("listings:cart")
 
+    return redirect("listings:dashboard")
 @login_required
 def update_cart(request, pk, action):
     item = get_object_or_404(CartItem, pk=pk, user=request.user)
@@ -165,41 +168,77 @@ def checkout(request):
 def place_order_cart(request):
 
     if request.method != "POST":
-        return JsonResponse({"success": False})
+        return JsonResponse({"success": False, "message": "POST required"})
+
+    # ✅ SAFE JSON PARSE (MAIN FIX)
+    try:
+        data = json.loads(request.body.decode("utf-8") or "{}")
+    except:
+        data = {}
+
+    address = data.get("address", "")
+    payment = data.get("payment_method", "cod")
 
     cart_items = CartItem.objects.filter(user=request.user)
 
-    if not cart_items.exists():
-        return JsonResponse({
-            "success": False,
-            "message": "No products in cart"
-        })
-
-    data = json.loads(request.body)
-
-    address = data.get("address")
-    payment = data.get("payment_method")
+    single_product_id = data.get("product_id")
 
     last_order_id = None
 
-    for item in cart_items:
+    # =========================
+    # BUY NOW FLOW
+    # =========================
+    if single_product_id:
+        product = get_object_or_404(Product, id=single_product_id)
+
         order = Order.objects.create(
             buyer=request.user,
-            product=item.product,
-            quantity=item.quantity,
-            address=address,
+            product=product,
+            quantity=1,
+            address=address or "Not provided",
             payment_method=payment,
             status="pending"
         )
+
+        Notification.objects.create(
+            user=product.owner,
+            message=f"New order: {product.title}"
+        )
+
         last_order_id = order.id
 
-    cart_items.delete()
+    # =========================
+    # CART FLOW
+    # =========================
+    else:
+
+        if not cart_items.exists():
+            return JsonResponse({"success": False, "message": "Cart empty"})
+
+        for item in cart_items:
+
+            order = Order.objects.create(
+                buyer=request.user,
+                product=item.product,
+                quantity=item.quantity,
+                address=address or "Not provided",
+                payment_method=payment,
+                status="pending"
+            )
+
+            Notification.objects.create(
+                user=item.product.owner,
+                message=f"New order: {item.product.title}"
+            )
+
+            last_order_id = order.id
+
+        cart_items.delete()
 
     return JsonResponse({
         "success": True,
         "order_id": last_order_id
     })
-
 # 📦 PRODUCT DETAIL
 @login_required
 def product_detail(request, pk):
@@ -236,3 +275,53 @@ def order_history(request):
         return JsonResponse(data, safe=False)
 
     return render(request, "listings/orders.html", {"orders": orders})
+
+@login_required
+def my_orders(request):
+    orders = Order.objects.filter(
+        buyer=request.user
+    ).exclude(status="cancelled").select_related("product").order_by("-created_at")
+
+    return render(request, "listings/my_orders.html", {
+        "orders": orders
+    })
+
+@login_required
+def cancel_order(request, pk):
+
+    try:
+        order = Order.objects.get(id=pk, buyer=request.user)
+
+        if order.status == "cancelled":
+            return JsonResponse({
+                "success": False,
+                "message": "Already cancelled"
+            })
+
+        # ✅ CHANGE STATUS instead of delete
+        order.status = "cancelled"
+        order.save()
+
+        return JsonResponse({
+            "success": True,
+            "id": pk
+        })
+
+    except Order.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "message": "Order not found"
+        })
+@login_required
+def notifications_view(request):
+
+        notifications = Notification.objects.filter(
+            user=request.user
+        ).order_by("-created_at")
+
+        # mark as read
+        notifications.update(is_read=True)
+
+        return render(request, "listings/notifications.html", {
+            "notifications": notifications
+        })

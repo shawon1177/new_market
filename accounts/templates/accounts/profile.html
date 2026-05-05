@@ -1,21 +1,270 @@
 {% extends 'accounts/base.html' %}
 {% block content %}
 
-<div class="min-h-screen flex items-center justify-center">
-<div class="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
+<style>
+    .profile-wrap {
+        background: #f5f6fa;
+        min-height: 100vh;
+        padding: 40px 15px;
+    }
 
-<h2 class="text-2xl font-bold mb-4">Profile</h2>
+    .profile-card {
+        max-width: 750px;
+        margin: auto;
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+        padding: 25px;
+    }
 
-<p><b>Email:</b> {{ request.user.email }}</p>
-<p><b>Username:</b> {{ request.user.username }}</p>
-<p class="mt-3">Bio: {{ profile.bio }}</p>
-<a href="{% url 'listings:cart' %}"
-   class="block mt-3 text-center bg-blue-500 text-white p-2 rounded">
-   My Cart
+    .top-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+    }
+
+    .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #4f46e5;
+        background: #f1f1f1;
+    }
+
+    .username {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .email {
+        font-size: 13px;
+        color: #777;
+    }
+
+    .bio-box {
+        margin-top: 15px;
+        background: #f9fafb;
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .action-bar {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-sm-custom {
+        font-size: 13px;
+        padding: 6px 12px;
+        border-radius: 8px;
+    }
+</style>
+
+
+<div class="profile-wrap">
+
+<div class="profile-card">
+
+    <!-- TOP -->
+    <div class="top-section">
+
+        {% if profile.image %}
+            <img id="avatarPreview"
+                 src="{{ profile.image.url }}"
+                 class="avatar">
+        {% else %}
+            <img id="avatarPreview"
+                 src="/media/default.png"
+                 class="avatar">
+        {% endif %}
+
+        <div>
+            <p class="username" id="usernameText">
+                {{ request.user.username }}
+            </p>
+            <div class="email">
+                {{ request.user.email }}
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- BIO -->
+    <div class="bio-box" id="bioText">
+        {{ profile.bio|default:"No bio added yet." }}
+    </div>
+
+
+    <!-- ACTIONS -->
+    <div class="action-bar">
+
+        {% if is_owner %}
+            <button class="btn btn-primary btn-sm-custom"
+                    onclick="openEditModal()">
+                Edit Profile
+            </button>
+        {% endif %}
+
+        <a href="{% url 'listings:cart' %}"
+           class="btn btn-outline-primary btn-sm-custom">
+            My Cart
+        </a>
+        <a href="{% url 'listings:my_orders' %}"
+   class="btn btn-outline-dark btn-sm-custom">
+   My Orders
 </a>
-<a href="/accounts/logout/" class="block mt-5 text-center bg-red-500 text-white p-2 rounded">Logout</a>
+
+        <a href="/accounts/logout/"
+           class="btn btn-outline-danger btn-sm-custom">
+            Logout
+        </a>
+
+    </div>
 
 </div>
+
 </div>
+
+
+<!-- ================= MODAL ================= -->
+{% if is_owner %}
+<div class="modal fade" id="editProfileModal">
+
+  <div class="modal-dialog modal-dialog-centered">
+
+    <div class="modal-content" style="border-radius: 14px;">
+
+      <div class="modal-header">
+        <h5>Edit Profile</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="modal-body">
+
+            <div class="mb-3">
+                <label>Username</label>
+                <input type="text"
+                       id="usernameInput"
+                       name="username"
+                       value="{{ request.user.username }}"
+                       class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label>Bio</label>
+                <textarea id="bioInput"
+                          name="bio"
+                          class="form-control">{{ profile.bio }}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label>Profile Image</label>
+                <input type="file"
+                       id="imageInput"
+                       name="image"
+                       class="form-control">
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                Cancel
+            </button>
+
+            <button type="submit"
+                    class="btn btn-success"
+                    onclick="updatePreview()">
+                Save Changes
+            </button>
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+</div>
+{% endif %}
+
+{% if orders %}
+
+<hr class="my-3">
+
+<h5 class="fw-bold mb-2">Orders</h5>
+
+{% for o in orders %}
+
+<div class="border rounded p-2 mb-2">
+
+    <div class="d-flex justify-content-between">
+        <b>{{ o.product.title }}</b>
+        <span class="badge bg-warning text-dark">
+            {{ o.status }}
+        </span>
+    </div>
+
+    <div class="small text-muted">
+        Qty: {{ o.quantity }} | Price: {{ o.product.price }}
+    </div>
+
+    <div class="small">
+        Address: {{ o.address }}
+    </div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p class="text-muted mt-3">No orders yet</p>
+
+{% endif %}
+<!-- ================= JS ================= -->
+<script>
+    let modal;
+
+    document.addEventListener("DOMContentLoaded", function () {
+        modal = new bootstrap.Modal(document.getElementById('editProfileModal'));
+    });
+
+    function openEditModal() {
+        modal.show();
+    }
+
+    function updatePreview() {
+
+        document.getElementById("usernameText").innerText =
+            document.getElementById("usernameInput").value;
+
+        document.getElementById("bioText").innerText =
+            document.getElementById("bioInput").value;
+
+        let input = document.getElementById("imageInput");
+
+        if (input.files && input.files[0]) {
+            let reader = new FileReader();
+
+            reader.onload = function (e) {
+                document.getElementById("avatarPreview").src = e.target.result;
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
 
 {% endblock %}

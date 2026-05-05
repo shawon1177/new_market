@@ -100,13 +100,23 @@
                     + Add
                 </a>
 
-                <!-- PROFILE -->
-                <a href="{% url 'profile' %}">
-                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center"
-                         style="width:40px; height:40px;">
-                        <span class="text-white">?</span>
-                    </div>
-                </a>
+<!-- PROFILE -->
+<a href="{% url 'profile' %}">
+    <div class="rounded-circle overflow-hidden"
+         style="width:45px; height:45px;">
+
+        {% if nav_profile and nav_profile.image %}
+            <img src="{{ nav_profile.image.url }}"
+                 class="w-100 h-100"
+                 style="object-fit: cover;">
+        {% else %}
+            <img src="/media/default.png"
+                 class="w-100 h-100"
+                 style="object-fit: cover;">
+        {% endif %}
+
+    </div>
+</a>
 
             </div>
 
@@ -147,6 +157,8 @@
 </div>
 
 {% endif %}
+<!-- GLOBAL BACK/FORWARD NAV -->
+
 
 <!-- PAGE CONTENT -->
 <div class="p-3 md:p-4">

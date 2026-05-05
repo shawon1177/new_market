@@ -2,6 +2,9 @@
 {% block content %}
 
 <div class="container py-4">
+<div id="successBox" style="display:none;" class="alert alert-success text-center mt-3">
+    Order placed successfully!
+</div>
 
 <h3 class="mb-4">Your Cart</h3>
 
@@ -192,7 +195,17 @@ function openCheckout(){
 function closeCheckout(){
     document.getElementById("checkoutModal").style.display = "none";
 }
+function showSuccessMessage(){
 
+    let box = document.getElementById("successBox");
+
+    box.style.display = "block";
+
+    setTimeout(() => {
+        box.style.display = "none";
+    }, 3000);
+
+}
 // PLACE ORDER (AJAX)
 function placeOrder(){
 
@@ -211,24 +224,23 @@ function placeOrder(){
         })
     })
     .then(res => res.json())
-    .then(data => {
+   .then(data => {
 
-        if(!data.success){
-            alert(data.message);
-            return;
-        }
+    if(!data.success){
+        alert(data.message || "Order failed");
+        return;
+    }
 
-        // cart clear UI
-        document.querySelectorAll(".card").forEach(e => e.remove());
 
-        document.getElementById("cart-total").innerText = "Total: ৳ 0";
+    document.querySelectorAll("[id^='card-']").forEach(e => e.remove());
+    document.getElementById("cart-total").innerText = "Total: ৳ 0";
 
-        closeCheckout();
+    closeCheckout();
 
-        // 🔥 AUTO REDIRECT TO ORDER DETAIL PAGE
-        window.location.href = `/listings/order/${data.order_id}/`;
 
-    });
+    showSuccessMessage();
+
+})
 
 }
 // CSRF

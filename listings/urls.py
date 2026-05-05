@@ -16,5 +16,7 @@ urlpatterns = [
     path("cart/place-order/", views.place_order_cart, name="place_order_cart"),
     path("cart/update/<int:pk>/<str:action>/", views.update_cart, name="update_cart"),
     path("order/<int:pk>/", views.order_detail, name="order_detail"),
-
+    path("my-orders/", views.my_orders, name="my_orders"),
+    path("order/cancel/<int:pk>/", views.cancel_order, name="cancel_order"),
+    path("notifications/", views.notifications_view, name="notifications"),
 ]
