@@ -325,3 +325,29 @@ def notifications_view(request):
         return render(request, "listings/notifications.html", {
             "notifications": notifications
         })
+
+
+
+from django.contrib.auth import get_user_model
+from accounts.models import Profile
+
+User = get_user_model()
+
+@login_required
+def userProfileView(request, id):
+    user_obj = get_object_or_404(User, id=id)
+
+    profile = Profile.objects.filter(user=user_obj).first()
+
+    return render(request, 'listings/userProfile.html', {
+        "user_obj": user_obj,
+        "profile": profile
+    })
+
+
+
+@login_required
+def userMessage(request,id):
+
+    return render(request, 'listings/messages.html',{"id":id})
+

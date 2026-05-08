@@ -19,4 +19,6 @@ urlpatterns = [
     path("my-orders/", views.my_orders, name="my_orders"),
     path("order/cancel/<int:pk>/", views.cancel_order, name="cancel_order"),
     path("notifications/", views.notifications_view, name="notifications"),
+    path("user_profile/<int:id>/", views.userProfileView, name="user_profile"),
+    path("messages/<int:id>/", views.userMessage, name="messages"),
 ]

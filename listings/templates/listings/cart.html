@@ -25,6 +25,8 @@
 
         <h6 class="mb-1">{{ item.product.title }}</h6>
 
+        <h6 class="mb-1">{{ item.product.owner.username }}</h6>
+
         <p class="mb-1">
             Price: ৳ {{ item.product.price }}
         </p>
@@ -48,6 +50,11 @@
     <a href="{% url 'listings:remove_from_cart' item.id %}"
        class="btn btn-outline-danger btn-sm ms-2">
         Remove
+    </a>
+
+    <a href="{% url 'listings:user_profile' item.product.owner.id %}"
+       class="btn btn-outline-danger btn-sm ms-2">
+        View Profile
     </a>
 
 </div>
@@ -314,3 +321,21 @@ function loadOrderDetail(id){
 </script>
 
 {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
