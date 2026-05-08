@@ -17,6 +17,8 @@ SECRET_KEY = 'django-insecure-nk#l6bm9krv+trvundl4$qj(cjov4bz2@9_7jlh49=tm51d*=_
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
     "foods-marketplace-uw63.onrender.com",
     ".onrender.com"
 ]
