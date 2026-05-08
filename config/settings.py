@@ -19,6 +19,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
+    "*"
     "foods-marketplace-uw63.onrender.com",
     ".onrender.com"
 ]
@@ -204,5 +205,6 @@ CLOUDINARY_STORAGE = {
 
 CSRF_TRUSTED_ORIGINS = [
     "https://foods-marketplace-uw63.onrender.com"
+    "*"
 ]
 
