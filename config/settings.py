@@ -17,9 +17,6 @@ SECRET_KEY = 'django-insecure-nk#l6bm9krv+trvundl4$qj(cjov4bz2@9_7jlh49=tm51d*=_
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-    "*"
     "foods-marketplace-uw63.onrender.com",
     ".onrender.com"
 ]
@@ -47,7 +44,6 @@ LOGOUT_REDIRECT_URL = "/accounts/login/"
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "test@market.com"
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 # ========================
@@ -120,18 +116,7 @@ TEMPLATES = [
 # DATABASE
 # ========================
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
-
-if DATABASE_URL:
-    DATABASES = {
-        'default': dj_database_url.parse(
-            DATABASE_URL,
-            conn_max_age=600,
-            ssl_require=True
-        )
-    }
-else:
-    DATABASES = {
+DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
@@ -168,14 +153,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 
-
-# ========================
-# WHITE NOISE
-# ========================
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # ========================
@@ -194,17 +175,4 @@ CHANNEL_LAYERS = {
 # ========================
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'durext9be',
-    'API_KEY': '753299192319317',
-    'API_SECRET': 'O_ikM9kLto02USxZcnInhzMTS_A',
-}
-
-
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://foods-marketplace-uw63.onrender.com"
-
-]
 
