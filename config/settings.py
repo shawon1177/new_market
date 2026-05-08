@@ -168,8 +168,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+
 
 
 # ========================
@@ -197,9 +196,9 @@ CHANNEL_LAYERS = {
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'your_cloud_name_here',
-    'API_KEY': 'your_api_key_here',
-    'API_SECRET': 'your_api_secret_here',
+    'CLOUD_NAME': 'durext9be',
+    'API_KEY': '753299192319317',
+    'API_SECRET': 'O_ikM9kLto02USxZcnInhzMTS_A',
 }
 
 
