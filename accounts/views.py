@@ -26,7 +26,7 @@ def generate_otp(email, purpose="verify"):
         purpose=purpose
     )
 
-    print("NEW OTP:", code)
+    print("NEW OTP:", code,flush=True)
     return otp
 
 
