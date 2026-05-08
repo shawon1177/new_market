@@ -17,9 +17,8 @@ SECRET_KEY = 'django-insecure-nk#l6bm9krv+trvundl4$qj(cjov4bz2@9_7jlh49=tm51d*=_
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "foods-marketplace.onrender.com",
-    ".onrender.com",
-    "*",
+    "foods-marketplace-uw63.onrender.com",
+    ".onrender.com"
 ]
 
 
@@ -198,3 +197,10 @@ CLOUDINARY_STORAGE = {
     'API_KEY': 'your_api_key_here',
     'API_SECRET': 'your_api_secret_here',
 }
+
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://foods-marketplace-uw63.onrender.com"
+]
+
