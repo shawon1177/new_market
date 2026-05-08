@@ -170,3 +170,9 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
+
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://foods-marketplace-uw63.onrender.com"
+]
