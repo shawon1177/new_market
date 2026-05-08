@@ -37,8 +37,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
      
-        
-
+    
 
 
     async def disconnect(self, close_code):
