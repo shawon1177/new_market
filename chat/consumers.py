@@ -1,15 +1,16 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from django.contrib.auth import get_user_model
 from django.db.models import Q
 
-User = get_user_model()
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
         self.receiver_id = self.scope["url_route"]["kwargs"]["receiver_id"]
         self.user = self.scope["user"]
 
@@ -67,6 +68,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 @database_sync_to_async
 def get_user_by_id(user_id):
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    
     return User.objects.get(id=user_id)
 
 
