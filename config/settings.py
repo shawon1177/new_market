@@ -205,6 +205,6 @@ CLOUDINARY_STORAGE = {
 
 CSRF_TRUSTED_ORIGINS = [
     "https://foods-marketplace-uw63.onrender.com"
-    "*"
+
 ]
 
