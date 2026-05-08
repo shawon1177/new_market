@@ -4,8 +4,6 @@ from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 
-from .models import Message
-
 User = get_user_model()
 
 
@@ -36,18 +34,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "message_history": history
         }))
 
-     
-    
-
-
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
-
-
-
 
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -81,6 +72,8 @@ def get_user_by_id(user_id):
 
 @database_sync_to_async
 def save_to_message_data(sender, receiver, message):
+    from .models import Message 
+
     Message.objects.create(
         sender=sender,
         receiver=receiver,
@@ -88,10 +81,9 @@ def save_to_message_data(sender, receiver, message):
     )
 
 
-
-
 @database_sync_to_async
 def get_message_list(user_id, other_id):
+    from .models import Message 
 
     messages = Message.objects.filter(
         Q(sender_id=user_id, receiver_id=other_id) |
@@ -99,7 +91,7 @@ def get_message_list(user_id, other_id):
     ).order_by("timestamp")
 
     return [
-        {    
+        {
             "sender_id": msg.sender.id,
             "sender": msg.sender.username,
             "receiver": msg.receiver.username,
@@ -108,6 +100,3 @@ def get_message_list(user_id, other_id):
         }
         for msg in messages
     ]
-
-
-
