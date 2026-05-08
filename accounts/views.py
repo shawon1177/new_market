@@ -137,20 +137,18 @@ def login_view(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        try:
-            user_obj = User.objects.get(email=email)
-        except User.DoesNotExist:
-            messages.error(request, "Invalid email or password")
-            return redirect("login")
-
         user = authenticate(
             request,
-            username=user_obj.username,
+            email=email,
             password=password
         )
 
         if user is None:
             messages.error(request, "Invalid email or password")
+            return redirect("login")
+
+        if not user.is_active:
+            messages.error(request, "Account not verified")
             return redirect("login")
 
         login(request, user)
