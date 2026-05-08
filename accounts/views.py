@@ -137,7 +137,17 @@ def login_view(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        user = authenticate(request, username=email, password=password)
+        try:
+            user_obj = User.objects.get(email=email)
+        except User.DoesNotExist:
+            messages.error(request, "Invalid email or password")
+            return redirect("login")
+
+        user = authenticate(
+            request,
+            username=user_obj.username,
+            password=password
+        )
 
         if user is None:
             messages.error(request, "Invalid email or password")
