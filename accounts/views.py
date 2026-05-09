@@ -34,7 +34,7 @@ def generate_otp(email, purpose="verify"):
         recipient_list=[email]
     )
 
-    print("NEW OTP:", code,flush=True)
+    
     return otp
 
 
