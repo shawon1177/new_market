@@ -17,10 +17,8 @@ SECRET_KEY = 'django-insecure-nk#l6bm9krv+trvundl4$qj(cjov4bz2@9_7jlh49=tm51d*=_
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "foods-marketplace-uw63.onrender.com",
-    ".onrender.com"
+    "shawon.pythonanywhere.com",
 ]
-
 
 # ========================
 # CUSTOM USER
@@ -171,7 +169,6 @@ CHANNEL_LAYERS = {
 }
 
 
-
 CSRF_TRUSTED_ORIGINS = [
-    "https://foods-marketplace-uw63.onrender.com"
+    "https://shawon.pythonanywhere.com"
 ]
